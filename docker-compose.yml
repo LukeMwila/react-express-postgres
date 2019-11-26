@@ -1,0 +1,18 @@
+version: "3"
+services:
+  web-app:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    container_name: web-app
+  to-do-api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    restart: on-failure
+    container_name: to-do-api

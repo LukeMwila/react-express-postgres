@@ -121,6 +121,6 @@ app.delete('/v1/items/:id', async (req, res) => {
 });
 
 // Server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const server = http.createServer(app);
 server.listen(port, () => console.log(`Server running on port ${port}`));
