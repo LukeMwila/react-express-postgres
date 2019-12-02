@@ -1,5 +1,7 @@
 version: "3"
 services:
+  postgres:
+    image: postgres:latest
   web-app:
     build:
       context: ./client
@@ -11,8 +13,11 @@ services:
   to-do-api:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3001:3001"
     restart: on-failure
     container_name: to-do-api
+    volumes:
+      - /app/node_modules # Inside the container, don't try to override this folder, just leave as is
+      - ./server:/app # Look at the server directory and copy everything into the app folder in the container

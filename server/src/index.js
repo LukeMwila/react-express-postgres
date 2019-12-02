@@ -5,8 +5,6 @@ const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const busboy = require('connect-busboy');
-const busboyBodyParser = require('busboy-body-parser');
 const uuid = require('uuid/v4');
 
 // Config
@@ -16,21 +14,6 @@ const config = require('./config');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(busboy());
-app.use(busboyBodyParser());
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-    return res.status(200).json({});
-  }
-  next();
-});
 
 // Postgres client
 const { Pool } = require('pg');
@@ -42,6 +25,19 @@ const pgClient = new Pool({
   port: config.pgPort
 });
 pgClient.on('error', () => console.log('Lost Postgres connection'));
+
+pgClient
+  .query(
+    `
+  CREATE TABLE IF NOT EXISTS items (
+    id uuid,
+    item_name TEXT NOT NUll,
+    complete BOOLEAN DEFAULT false,
+    PRIMARY KEY (id)
+  )
+`
+  )
+  .catch(err => console.log(err));
 
 // Express route handlers
 app.get('/test', (req, res) => {
