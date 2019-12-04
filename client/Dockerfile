@@ -1,13 +1,10 @@
-FROM node:10-alpine AS alpine
-
+FROM node:alpine as build 
 WORKDIR /app
-
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package.json .
-
-## install only the packages defined in the package-lock.json (faster than the normal npm install)
-RUN npm install
-# Copy the contents of the project to the image
+COPY package*.json ./
+RUN npm install 
 COPY . .
-# Run 'npm start' when the container starts.
-CMD ["npm", "run", "start"]
+RUN npm run build
+
+FROM nginx 
+EXPOSE 80
+COPY --from=build /app/build /usr/share/nginx/html
